@@ -8,11 +8,19 @@ return new class extends Migration
 {
     public function up()
     {
-        Schema::create('availments_table', function (Blueprint $table) {
+        Schema::create('availments', function (Blueprint $table) {
             $table->id();
-
-            // add fields
-
+            $table->string('reference_code')->unique();
+            $table->string('sku')->index();
+            $table->integer('processing_fee');
+            $table->integer('loan_amount');
+            $table->integer('down_payment_monthly_amortization');
+            $table->integer('down_payment_months_to_pay');
+            $table->integer('balance_payment_monthly_amortization');
+            $table->integer('balance_payment_months_to_pay');
+            $table->integer('balance_payment_annual_interest');
+            $table->string('seller_commission_code')->nullable();
+            $table->json('loan_computation')->nullable();
             $table->timestamps();
         });
     }
