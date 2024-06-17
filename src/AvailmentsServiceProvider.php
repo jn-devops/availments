@@ -2,6 +2,7 @@
 
 namespace Homeful\Availments;
 
+use Illuminate\Database\Schema\Blueprint;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 use Homeful\Availments\Commands\AvailmentsCommand;
@@ -17,7 +18,7 @@ class AvailmentsServiceProvider extends PackageServiceProvider
          */
         $package
             ->name('availments')
-            ->hasConfigFile()
+            ->hasConfigFile(['availments', 'property', 'data'])
             ->hasViews()
             ->hasMigration('create_availments_table')
             ->hasCommand(AvailmentsCommand::class);

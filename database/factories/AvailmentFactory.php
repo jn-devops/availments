@@ -4,6 +4,7 @@ namespace Homeful\Availments\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Homeful\Availments\Models\Availment;
+use Faker\Provider\en_PH\PhoneNumber;
 
 class AvailmentFactory extends Factory
 {
@@ -13,7 +14,8 @@ class AvailmentFactory extends Factory
     {
         return [
             'reference_code' => $this->faker->word(),
-            'sku' => $this->faker->word(),
+            'borrower_mobile' => PhoneNumber::mobileNumber(),
+            'product_sku' => $this->faker->word(),
             'processing_fee' => $this->faker->numberBetween(10000, 20000),
             'loan_amount' => $this->faker->numberBetween(850000, 3000000),
             'down_payment_monthly_amortization' => $this->faker->numberBetween(100000, 200000),
@@ -22,7 +24,6 @@ class AvailmentFactory extends Factory
             'balance_payment_months_to_pay' => $this->faker->numberBetween(300, 320),
             'balance_payment_annual_interest' => $this->faker->numberBetween(3, 7)/100,
             'seller_commission_code' => $this->faker->word(),
-            'loan_computation' => [],
         ];
     }
 }
