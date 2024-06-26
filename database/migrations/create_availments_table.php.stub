@@ -10,15 +10,20 @@ return new class extends Migration
     {
         Schema::create('availments', function (Blueprint $table) {
             $table->id();
-            $table->string('borrower_mobile')->index();
             $table->string('product_sku')->index();
-            $table->integer('processing_fee');
-            $table->integer('loan_amount');
-            $table->integer('down_payment_monthly_amortization')->nullable();
-            $table->integer('down_payment_months_to_pay')->nullable();
-            $table->integer('balance_payment_monthly_amortization');
-            $table->integer('balance_payment_months_to_pay');
-            $table->integer('balance_payment_annual_interest');
+            $table->integer('holding_fee'); //minor units, PHP
+            $table->integer('total_contract_price'); //minor units, PHP
+            $table->float('miscellaneous_fees');
+            $table->float('total_contract_price_down_payment_amount');
+            $table->float('total_contract_price_balance_down_payment_amount');
+            $table->float('total_contract_price_balance_down_payment_amortization_amount');
+            $table->float('miscellaneous_fees_down_payment_amount');
+            $table->integer('loan_amount'); //minor units, PHP
+            $table->integer('loan_term'); //in years
+            $table->float('loan_interest'); //annual interest
+            $table->integer('loan_amortization_amount'); //minor units, PHP
+            $table->integer('balance_cash_out_amount'); //minor units, PHP
+
             $table->schemalessAttributes('meta');
             $table->timestamps();
         });

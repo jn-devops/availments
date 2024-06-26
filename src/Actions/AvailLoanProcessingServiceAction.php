@@ -2,35 +2,53 @@
 
 namespace Homeful\Availments\Actions;
 
-use Homeful\Availments\Models\Availment;
-use Homeful\Loan\Exceptions\LoanExceedsLoanableValueException;
-use Homeful\Property\Property;
-use Brick\Math\Exception\NumberFormatException;
-use Brick\Math\Exception\RoundingNecessaryException;
+use Homeful\Borrower\Exceptions\{MaximumBorrowingAgeBreached, MinimumBorrowingAgeNotMet};
+use Brick\Math\Exception\{NumberFormatException, RoundingNecessaryException};
+use Homeful\Availments\Interfaces\{BorrowerInterface, PropertyInterface};
 use Brick\Money\Exception\UnknownCurrencyException;
-use Homeful\Availments\Interfaces\BorrowerInterface;
-use Homeful\Availments\Interfaces\PropertyInterface;
-use Homeful\Borrower\Borrower;
-use Homeful\Borrower\Exceptions\MaximumBorrowingAgeBreached;
-use Homeful\Borrower\Exceptions\MinimumBorrowingAgeNotMet;
 use Lorisleiva\Actions\Concerns\AsAction;
+use Illuminate\Support\Facades\Validator;
+use Homeful\Availments\Models\Availment;
+use Homeful\Borrower\Borrower;
+use Homeful\Property\Property;
+use Illuminate\Support\Arr;
 use Homeful\Loan\Loan;
-use Whitecube\Price\Price;
-use Homeful\Loan\Data\LoanData;
 
 class AvailLoanProcessingServiceAction
 {
     use AsAction;
 
     /**
+     * @param BorrowerInterface $borrowerObject
+     * @param PropertyInterface $propertyObject
+     * @param array $adjustments
+     * @param string|null $reference_code
+     * @return Availment
+     * @throws MaximumBorrowingAgeBreached
      * @throws MinimumBorrowingAgeNotMet
+     * @throws NumberFormatException
      * @throws RoundingNecessaryException
      * @throws UnknownCurrencyException
-     * @throws NumberFormatException
-     * @throws MaximumBorrowingAgeBreached
+     * @throws \Brick\Math\Exception\MathException
+     * @throws \Brick\Money\Exception\MoneyMismatchException
+     * @throws \Homeful\Loan\Exceptions\LoanExceedsNetTotalContractPriceException
+     * @throws \Homeful\Property\Exceptions\MaximumContractPriceBreached
+     * @throws \Homeful\Property\Exceptions\MinimumContractPriceBreached
+     * @throws \Illuminate\Validation\ValidationException
      */
-    public function handle(BorrowerInterface $borrowerObject, PropertyInterface $propertyObject, Price $loanAmount = null, string $reference_code = null)
+    public function handle(BorrowerInterface $borrowerObject, PropertyInterface $propertyObject, array $adjustments, string $reference_code = null): Availment
     {
+        $validated = Validator::make($adjustments, [
+            'holding_fee' => ['nullable', 'integer', 'min:0', 'max:30000'],
+            'total_contract_price' => ['nullable', 'integer', 'min:0', 'max:10000000'],
+            'percent_down_payment' => ['nullable', 'numeric', 'min:0', 'max:0.20'],
+            'percent_miscellaneous_fees' => ['nullable', 'numeric', 'min:0', 'max:0.10'],
+            'loan_interest' => ['nullable', 'numeric', 'min:0', 'max:0.16'],
+            'loan_term' => ['nullable', 'integer', 'min:0', 'max:30'],
+            'total_contract_price_balance_down_payment_term' => ['nullable', 'integer', 'min:0', 'max:12'],
+            'low_cash_out_amount' => ['nullable', 'integer', 'min:0', 'max:50000'],
+        ])->validate();
+
         $borrower = (new Borrower)
             ->setBirthdate($borrowerObject->getBirthdate())
             ->setRegional($borrowerObject->getRegional())
@@ -41,25 +59,34 @@ class AvailLoanProcessingServiceAction
         $loan = (new Loan)
             ->setBorrower($borrower)
             ->setProperty($property)
-            ->setLoanAmount($loanAmount ?: $property->getLoanableValue());
+        ;
+        $loan->setLoanAmount($loan->getNetTotalContractPrice());
 
-        $availment = new Availment(array_filter([
-            'reference_code' => $reference_code,
-            'borrower_mobile' => $borrowerObject->getMobile(),
-            'product_sku' => $propertyObject->getSKU(),
-            'processing_fee' => $propertyObject->getProcessingFee(),
-            'loan_amount' => $loan->getLoanAmount(),
-            'down_payment_monthly_amortization' => 0,
-            'down_payment_months_to_pay' => 0,
-            'balance_payment_monthly_amortization' => $loan->getMonthlyAmortizationAmount(),
-            'balance_payment_months_to_pay' => $loan->getMaximumMonthsToPay(),
-            'balance_payment_annual_interest' => $loan->getAnnualInterestRate(),
-            'seller_commission_code' => $borrowerObject->getSellerCommissionCode(),
-        ]));
+        $product_sku = $propertyObject->getSKU();
+        $holding_fee = Arr::get($validated, 'holding_fee', $propertyObject->getProcessingFee());
+        $total_contract_price = Arr::get($validated, 'total_contract_price', $property->getTotalContractPrice());
+        $percent_down_payment = Arr::get($validated, 'percent_down_payment', 5/100);
+        $percent_miscellaneous_fees = Arr::get($validated, 'percent_miscellaneous_fees', 8.5/100);
+        $loan_interest = Arr::get($validated, 'loan_interest', $loan->getAnnualInterestRate());
+        $loan_term = Arr::get($validated, 'loan_term', 20);
+        $total_contract_price_balance_down_payment_term = Arr::get($validated, 'total_contract_price_balance_down_payment_term', 12);
+        $low_cash_out_amount = Arr::get($validated, 'low_cash_out_amount', 0);
 
-        $availment->loan_computation = LoanData::fromObject($loan);
-        $availment->save();
+        $attribs = [
+            'product_sku' => $product_sku,
+            'holding_fee' => $holding_fee,
+            'total_contract_price' => $total_contract_price,
+            'percent_miscellaneous_fees' => $percent_miscellaneous_fees,
+            'percent_down_payment' => $percent_down_payment,
+            'total_contract_price_balance_down_payment_term' => $total_contract_price_balance_down_payment_term,
+            'loan_term' => $loan_term,
+            'loan_interest' => $loan_interest,
+            'low_cash_out_amount' => $low_cash_out_amount
+        ];
 
-        return $availment;
+        return tap(app(Availment::class)->create($attribs), function (Availment $availment) use ($loan) {
+            $availment->loan_object = $loan;
+            $availment->save();
+        });
     }
 }
