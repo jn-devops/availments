@@ -1,11 +1,11 @@
 <?php
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
+use Brick\Money\Money;
 use Homeful\Availments\Data\AvailmentData;
 use Homeful\Availments\Models\Availment;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\WithFaker;
 use Whitecube\Price\Price;
-use Brick\Money\Money;
 
 uses(RefreshDatabase::class, WithFaker::class);
 
@@ -16,13 +16,13 @@ dataset('agapeya-70-50-duplex', function () {
                 'product_sku' => 'JN-AGM-CL-HLDUS-GRN',
                 'holding_fee' => new Price(Money::of(10000, 'PHP')),
                 'total_contract_price' => new Price(Money::of(2500000, 'PHP')),
-                'percent_miscellaneous_fees' => 8.5/100,
-                'percent_down_payment' => 5/100,
+                'percent_miscellaneous_fees' => 8.5 / 100,
+                'percent_down_payment' => 5 / 100,
                 'total_contract_price_balance_down_payment_term' => 12,
                 'loan_term' => 20,
-                'loan_interest' => 7/100,
-            ]
-        ]
+                'loan_interest' => 7 / 100,
+            ],
+        ],
     ];
 });
 
@@ -33,13 +33,13 @@ dataset('ter-je-2br-40', function () {
                 'product_sku' => 'JN-TERJE-BL-CS-2BREU-R',
                 'holding_fee' => new Price(Money::of(10000, 'PHP')),
                 'total_contract_price' => new Price(Money::of(4500000, 'PHP')),
-                'percent_miscellaneous_fees' => 8.5/100,
-                'percent_down_payment' => 5/100,
+                'percent_miscellaneous_fees' => 8.5 / 100,
+                'percent_down_payment' => 5 / 100,
                 'total_contract_price_balance_down_payment_term' => 12,
                 'loan_term' => 20,
-                'loan_interest' => 7/100,
-            ]
-        ]
+                'loan_interest' => 7 / 100,
+            ],
+        ],
     ];
 });
 
@@ -48,16 +48,16 @@ dataset('promo_1', function () {
         [
             [
                 'product_sku' => 'JN-AGM-CL-HLDUS-GRN',
-                'holding_fee' => new Price(Money::of(10000, 'PHP')),//low-cash promo
-                'balance_cash_out' => new Price(Money::of(20000, 'PHP')),//low-cash promo
+                'holding_fee' => new Price(Money::of(10000, 'PHP')), //low-cash promo
+                'balance_cash_out' => new Price(Money::of(20000, 'PHP')), //low-cash promo
                 'total_contract_price' => new Price(Money::of(2500000, 'PHP')),
-                'percent_miscellaneous_fees' => 5/100, //
-                'percent_down_payment' => 0/100,//subsidized
+                'percent_miscellaneous_fees' => 5 / 100, //
+                'percent_down_payment' => 0 / 100, //subsidized
                 'total_contract_price_balance_down_payment_term' => 12,
                 'loan_term' => 20,
-                'loan_interest' => 7/100,
-            ]
-        ]
+                'loan_interest' => 7 / 100,
+            ],
+        ],
     ];
 });
 
@@ -95,32 +95,32 @@ it('can be persisted using associative array', function (array $attributes) {
         expect($availment->product_sku)->toBe('JN-AGM-CL-HLDUS-GRN');
         expect($availment->holding_fee->inclusive()->compareTo(10000.0))->toBe(0); //C
         expect($availment->total_contract_price->inclusive()->compareTo(2500000.0))->toBe(0); //A
-        expect($availment->percent_miscellaneous_fees)->toBe(8.5/100);
-        expect($availment->miscellaneous_fees->inclusive()->compareTo(2500000.0 * 8.5/100))->toBe(0); //a
+        expect($availment->percent_miscellaneous_fees)->toBe(8.5 / 100);
+        expect($availment->miscellaneous_fees->inclusive()->compareTo(2500000.0 * 8.5 / 100))->toBe(0); //a
         expect($availment->miscellaneous_fees->inclusive()->compareTo(212500.0))->toBe(0); //a
-        expect($availment->net_total_contract_price->inclusive()->compareTo(2500000.0 * (1+8.5/100)))->toBe(0); //b
+        expect($availment->net_total_contract_price->inclusive()->compareTo(2500000.0 * (1 + 8.5 / 100)))->toBe(0); //b
         expect($availment->net_total_contract_price->inclusive()->compareTo(2712500.0))->toBe(0); //b
-        expect($availment->percent_down_payment)->toBe(5/100);
-        expect($availment->total_contract_price_down_payment_amount->inclusive()->compareTo(2500000.0 * 5/100))->toBe(0); //B
+        expect($availment->percent_down_payment)->toBe(5 / 100);
+        expect($availment->total_contract_price_down_payment_amount->inclusive()->compareTo(2500000.0 * 5 / 100))->toBe(0); //B
         expect($availment->total_contract_price_down_payment_amount->inclusive()->compareTo(125000.0))->toBe(0); //B
-        expect($availment->total_contract_price_balance_down_payment_amount->inclusive()->compareTo(125000.0-10000.0))->toBe(0); //D
+        expect($availment->total_contract_price_balance_down_payment_amount->inclusive()->compareTo(125000.0 - 10000.0))->toBe(0); //D
         expect($availment->total_contract_price_balance_down_payment_amount->inclusive()->compareTo(115000.0))->toBe(0); //D
         expect($availment->total_contract_price_balance_down_payment_term)->toBe(12);
         expect($availment->total_contract_price_balance_down_payment_amortization_amount->inclusive()->compareTo($availment->total_contract_price_balance_down_payment_amount->inclusive()->dividedBy($availment->total_contract_price_balance_down_payment_term, roundingMode: \Brick\Math\RoundingMode::CEILING)))->toBe(0); //E
-        expect($availment->total_contract_price_balance_down_payment_amortization_amount->inclusive()->compareTo( 9583.34))->toBe(0); //E
-        expect($availment->miscellaneous_fees_down_payment_amount->inclusive()->compareTo( $availment->miscellaneous_fees->inclusive()->multipliedBy($availment->percent_down_payment, roundingMode: \Brick\Math\RoundingMode::CEILING)))->toBe(0); //c
-        expect($availment->miscellaneous_fees_down_payment_amount->inclusive()->compareTo( 212500.0 * 5/100))->toBe(0); //c
-        expect($availment->miscellaneous_fees_down_payment_amount->inclusive()->compareTo( 10625.0))->toBe(0); //c
-        expect($availment->percent_balance_payment)->toBe(95/100);
-        expect($availment->total_contract_price_balance_payment_amount->inclusive()->compareTo(2500000.0 * 95/100))->toBe(0); //F
+        expect($availment->total_contract_price_balance_down_payment_amortization_amount->inclusive()->compareTo(9583.34))->toBe(0); //E
+        expect($availment->miscellaneous_fees_down_payment_amount->inclusive()->compareTo($availment->miscellaneous_fees->inclusive()->multipliedBy($availment->percent_down_payment, roundingMode: \Brick\Math\RoundingMode::CEILING)))->toBe(0); //c
+        expect($availment->miscellaneous_fees_down_payment_amount->inclusive()->compareTo(212500.0 * 5 / 100))->toBe(0); //c
+        expect($availment->miscellaneous_fees_down_payment_amount->inclusive()->compareTo(10625.0))->toBe(0); //c
+        expect($availment->percent_balance_payment)->toBe(95 / 100);
+        expect($availment->total_contract_price_balance_payment_amount->inclusive()->compareTo(2500000.0 * 95 / 100))->toBe(0); //F
         expect($availment->total_contract_price_balance_payment_amount->inclusive()->compareTo(2375000.0))->toBe(0); //F
-        expect($availment->miscellaneous_fees_balance_payment_amount->inclusive()->compareTo(212500.0 * 95/100))->toBe(0); //d
+        expect($availment->miscellaneous_fees_balance_payment_amount->inclusive()->compareTo(212500.0 * 95 / 100))->toBe(0); //d
         expect($availment->miscellaneous_fees_balance_payment_amount->inclusive()->compareTo(201875.0))->toBe(0); //d
         expect($availment->loan_amount->inclusive()->compareTo(2375000.0 + 201875.0))->toBe(0); //G
         expect($availment->loan_amount->inclusive()->compareTo(2576875.0))->toBe(0); //G
         expect($availment->loan_term)->toBe(20);
-        expect($availment->loan_interest)->toBe(7/100);
-        expect($availment->loan_amortization_amount->inclusive()->compareTo(19978.0 ))->toBe(0); //H
+        expect($availment->loan_interest)->toBe(7 / 100);
+        expect($availment->loan_amortization_amount->inclusive()->compareTo(19978.0))->toBe(0); //H
         expect($availment->low_cash_out_amount->inclusive()->compareTo(0))->toBe(0);
         expect($availment->balance_cash_out_amount->inclusive()->compareTo(0.0))->toBe(0);
         $availment->loan_term = 25;
@@ -130,13 +130,13 @@ it('can be persisted using associative array', function (array $attributes) {
         $availment->save();
         expect($availment->loan_amortization_amount->inclusive()->compareTo(17144.0))->toBe(0); //H
 
-        $availment->percent_miscellaneous_fees = 5/100;
+        $availment->percent_miscellaneous_fees = 5 / 100;
         $availment->low_cash_out_amount = 30000; //C
         $availment->save();
-        expect($availment->miscellaneous_fees->inclusive()->compareTo(2500000.0 * 5/100))->toBe(0); //a
+        expect($availment->miscellaneous_fees->inclusive()->compareTo(2500000.0 * 5 / 100))->toBe(0); //a
         expect($availment->miscellaneous_fees->inclusive()->compareTo(125000.0))->toBe(0); //a
         expect($availment->total_contract_price_balance_payment_amount->inclusive()->compareTo(2375000.0))->toBe(0); //F
-        expect($availment->loan_amount->inclusive()->compareTo(2375000.0 + 125000.0))->toBe(0);//a+F
+        expect($availment->loan_amount->inclusive()->compareTo(2375000.0 + 125000.0))->toBe(0); //a+F
         expect($availment->balance_cash_out_amount->inclusive()->compareTo(30000 - 10000))->toBe(0);
         expect($availment->loan_amortization_amount->inclusive()->compareTo(16633.0))->toBe(0);
     }
@@ -148,10 +148,10 @@ it('has computed attributes and can be updated indirectly', function (array $att
     if ($availment instanceof Availment) {
         $availment->total_contract_price = 3000000;
         $availment->save();
-        expect($availment->miscellaneous_fees->inclusive()->compareTo(3000000 * 8.5/100))->toBe(0);
-        $availment->percent_miscellaneous_fees = 9/100;
+        expect($availment->miscellaneous_fees->inclusive()->compareTo(3000000 * 8.5 / 100))->toBe(0);
+        $availment->percent_miscellaneous_fees = 9 / 100;
         $availment->save();
-        expect($availment->miscellaneous_fees->inclusive()->compareTo(3000000 * 9/100))->toBe(0);
+        expect($availment->miscellaneous_fees->inclusive()->compareTo(3000000 * 9 / 100))->toBe(0);
     }
 })->with('agapeya-70-50-duplex');
 
@@ -162,32 +162,32 @@ it('can have sample condominium computation', function (array $attributes) {
         expect($availment->product_sku)->toBe('JN-TERJE-BL-CS-2BREU-R');
         expect($availment->holding_fee->inclusive()->compareTo(10000.0))->toBe(0); //C
         expect($availment->total_contract_price->inclusive()->compareTo(4500000.0))->toBe(0); //A
-        expect($availment->percent_miscellaneous_fees)->toBe(8.5/100);
-        expect($availment->miscellaneous_fees->inclusive()->compareTo(4500000.0 * 8.5/100))->toBe(0); //a
+        expect($availment->percent_miscellaneous_fees)->toBe(8.5 / 100);
+        expect($availment->miscellaneous_fees->inclusive()->compareTo(4500000.0 * 8.5 / 100))->toBe(0); //a
         expect($availment->miscellaneous_fees->inclusive()->compareTo(382500.0))->toBe(0); //a
-        expect($availment->net_total_contract_price->inclusive()->compareTo(4500000.0 * (1+8.5/100)))->toBe(0); //b
+        expect($availment->net_total_contract_price->inclusive()->compareTo(4500000.0 * (1 + 8.5 / 100)))->toBe(0); //b
         expect($availment->net_total_contract_price->inclusive()->compareTo(4882500.0))->toBe(0); //b
-        expect($availment->percent_down_payment)->toBe(5/100);
-        expect($availment->total_contract_price_down_payment_amount->inclusive()->compareTo(4500000.0 * 5/100))->toBe(0); //B
+        expect($availment->percent_down_payment)->toBe(5 / 100);
+        expect($availment->total_contract_price_down_payment_amount->inclusive()->compareTo(4500000.0 * 5 / 100))->toBe(0); //B
         expect($availment->total_contract_price_down_payment_amount->inclusive()->compareTo(225000.0))->toBe(0); //B
-        expect($availment->total_contract_price_balance_down_payment_amount->inclusive()->compareTo(225000.0-10000.0))->toBe(0); //D
+        expect($availment->total_contract_price_balance_down_payment_amount->inclusive()->compareTo(225000.0 - 10000.0))->toBe(0); //D
         expect($availment->total_contract_price_balance_down_payment_amount->inclusive()->compareTo(215000.0))->toBe(0); //D
         expect($availment->total_contract_price_balance_down_payment_term)->toBe(12);
         expect($availment->total_contract_price_balance_down_payment_amortization_amount->inclusive()->compareTo($availment->total_contract_price_balance_down_payment_amount->inclusive()->dividedBy($availment->total_contract_price_balance_down_payment_term, roundingMode: \Brick\Math\RoundingMode::CEILING)))->toBe(0); //E
-        expect($availment->total_contract_price_balance_down_payment_amortization_amount->inclusive()->compareTo( 17916.67 ))->toBe(0); //E
-        expect($availment->miscellaneous_fees_down_payment_amount->inclusive()->compareTo( $availment->miscellaneous_fees->inclusive()->multipliedBy($availment->percent_down_payment, roundingMode: \Brick\Math\RoundingMode::CEILING)))->toBe(0); //c
-        expect($availment->miscellaneous_fees_down_payment_amount->inclusive()->compareTo( 382500.0 * 5/100))->toBe(0); //c
-        expect($availment->miscellaneous_fees_down_payment_amount->inclusive()->compareTo( 19125.0))->toBe(0); //c
-        expect($availment->percent_balance_payment)->toBe(95/100);
-        expect($availment->total_contract_price_balance_payment_amount->inclusive()->compareTo(4500000.0 * 95/100))->toBe(0); //F
+        expect($availment->total_contract_price_balance_down_payment_amortization_amount->inclusive()->compareTo(17916.67))->toBe(0); //E
+        expect($availment->miscellaneous_fees_down_payment_amount->inclusive()->compareTo($availment->miscellaneous_fees->inclusive()->multipliedBy($availment->percent_down_payment, roundingMode: \Brick\Math\RoundingMode::CEILING)))->toBe(0); //c
+        expect($availment->miscellaneous_fees_down_payment_amount->inclusive()->compareTo(382500.0 * 5 / 100))->toBe(0); //c
+        expect($availment->miscellaneous_fees_down_payment_amount->inclusive()->compareTo(19125.0))->toBe(0); //c
+        expect($availment->percent_balance_payment)->toBe(95 / 100);
+        expect($availment->total_contract_price_balance_payment_amount->inclusive()->compareTo(4500000.0 * 95 / 100))->toBe(0); //F
         expect($availment->total_contract_price_balance_payment_amount->inclusive()->compareTo(4275000.0))->toBe(0); //F
-        expect($availment->miscellaneous_fees_balance_payment_amount->inclusive()->compareTo(382500.0 * 95/100))->toBe(0); //d
+        expect($availment->miscellaneous_fees_balance_payment_amount->inclusive()->compareTo(382500.0 * 95 / 100))->toBe(0); //d
         expect($availment->miscellaneous_fees_balance_payment_amount->inclusive()->compareTo(363375.0))->toBe(0); //d
         expect($availment->loan_amount->inclusive()->compareTo(4275000.0 + 363375.0))->toBe(0); //G
         expect($availment->loan_amount->inclusive()->compareTo(4638375.0))->toBe(0); //G
         expect($availment->loan_term)->toBe(20);
-        expect($availment->loan_interest)->toBe(7/100);
-        expect($availment->loan_amortization_amount->inclusive()->compareTo(35961.0 ))->toBe(0); //H
+        expect($availment->loan_interest)->toBe(7 / 100);
+        expect($availment->loan_amortization_amount->inclusive()->compareTo(35961.0))->toBe(0); //H
         expect($availment->low_cash_out_amount->inclusive()->compareTo(0))->toBe(0);
         expect($availment->balance_cash_out_amount->inclusive()->compareTo(0.0))->toBe(0);
         $availment->loan_term = 25;
@@ -197,13 +197,13 @@ it('can have sample condominium computation', function (array $attributes) {
         $availment->save();
         expect($availment->loan_amortization_amount->inclusive()->compareTo(30859.0))->toBe(0); //H
 
-        $availment->percent_miscellaneous_fees = 5/100;
+        $availment->percent_miscellaneous_fees = 5 / 100;
         $availment->low_cash_out_amount = 30000; //C
         $availment->save();
-        expect($availment->miscellaneous_fees->inclusive()->compareTo(4500000.0 * 5/100))->toBe(0); //a
+        expect($availment->miscellaneous_fees->inclusive()->compareTo(4500000.0 * 5 / 100))->toBe(0); //a
         expect($availment->miscellaneous_fees->inclusive()->compareTo(225000.0))->toBe(0); //a
         expect($availment->total_contract_price_balance_payment_amount->inclusive()->compareTo(4275000.0))->toBe(0); //F
-        expect($availment->loan_amount->inclusive()->compareTo(225000.0 + 4275000.0))->toBe(0);//a+F
+        expect($availment->loan_amount->inclusive()->compareTo(225000.0 + 4275000.0))->toBe(0); //a+F
         expect($availment->balance_cash_out_amount->inclusive()->compareTo(30000 - 10000))->toBe(0);
         expect($availment->loan_amortization_amount->inclusive()->compareTo(29939.0))->toBe(0);
     }

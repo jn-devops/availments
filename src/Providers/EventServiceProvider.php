@@ -2,9 +2,9 @@
 
 namespace Homeful\Availments\Providers;
 
-use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-use Homeful\Availments\Observers\AvailmentObserver;
 use Homeful\Availments\Models\Availment;
+use Homeful\Availments\Observers\AvailmentObserver;
+use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
 class EventServiceProvider extends ServiceProvider
 {

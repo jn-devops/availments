@@ -2,10 +2,10 @@
 
 namespace Homeful\Availments\Tests;
 
+use Homeful\Availments\AvailmentsServiceProvider;
 use Homeful\Availments\Providers\EventServiceProvider;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Orchestra\Testbench\TestCase as Orchestra;
-use Homeful\Availments\AvailmentsServiceProvider;
 use Spatie\SchemalessAttributes\SchemalessAttributesServiceProvider;
 
 class TestCase extends Orchestra
@@ -24,7 +24,7 @@ class TestCase extends Orchestra
         return [
             AvailmentsServiceProvider::class,
             SchemalessAttributesServiceProvider::class,
-            EventServiceProvider::class
+            EventServiceProvider::class,
         ];
     }
 

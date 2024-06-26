@@ -3,9 +3,9 @@
 namespace Homeful\Availments\Traits;
 
 use Brick\Math\RoundingMode;
+use Brick\Money\Money;
 use Jarouche\Financial\PMT;
 use Whitecube\Price\Price;
-use Brick\Money\Money;
 
 trait UpdatingAvailment
 {
@@ -15,8 +15,9 @@ trait UpdatingAvailment
     public function updatingMiscellaneousFees(): self
     {
         $percent_miscellaneous_fees = $this->percent_miscellaneous_fees;
-        if (($tcp = $this->total_contract_price->inclusive()) instanceof Money)
+        if (($tcp = $this->total_contract_price->inclusive()) instanceof Money) {
             $this->miscellaneous_fees = new Price($tcp->multipliedBy($percent_miscellaneous_fees, roundingMode: RoundingMode::CEILING));
+        }
 
         return $this;
     }
@@ -27,8 +28,9 @@ trait UpdatingAvailment
     public function updatingTotalContractPriceDownPaymentAmount(): self
     {
         $percent_down_payment = $this->percent_down_payment;
-        if (($tcp = $this->total_contract_price->inclusive()) instanceof Money)
+        if (($tcp = $this->total_contract_price->inclusive()) instanceof Money) {
             $this->total_contract_price_down_payment_amount = new Price($tcp->multipliedBy($percent_down_payment, roundingMode: RoundingMode::CEILING));
+        }
 
         return $this;
     }
@@ -71,6 +73,7 @@ trait UpdatingAvailment
 
     /**
      * @return UpdatingAvailment|\Homeful\Availments\Models\Availment
+     *
      * @throws \Brick\Math\Exception\MathException
      * @throws \Brick\Money\Exception\MoneyMismatchException
      */
@@ -80,8 +83,7 @@ trait UpdatingAvailment
             $tcp_balance_payment_amount = $this->total_contract_price_balance_payment_amount->inclusive();
             $miscellaneous_fees = $this->miscellaneous_fees->inclusive();
             $this->loan_amount = new Price($tcp_balance_payment_amount->plus($miscellaneous_fees, roundingMode: RoundingMode::CEILING));
-        }
-        else {
+        } else {
             $tcp_balance_payment_amount = $this->total_contract_price_balance_payment_amount->inclusive();
             $mf_balance_payment_amount = $this->miscellaneous_fees_balance_payment_amount->inclusive();
             $this->loan_amount = new Price($tcp_balance_payment_amount->plus($mf_balance_payment_amount, roundingMode: RoundingMode::CEILING));
@@ -92,13 +94,14 @@ trait UpdatingAvailment
 
     /**
      * @return UpdatingAvailment|\Homeful\Availments\Models\Availment
+     *
      * @throws \Brick\Math\Exception\NumberFormatException
      * @throws \Brick\Math\Exception\RoundingNecessaryException
      * @throws \Brick\Money\Exception\UnknownCurrencyException
      */
     public function updatingLoanAmortizationAmount(): self
     {
-        $interest_rate = $this->loan_interest/12;
+        $interest_rate = $this->loan_interest / 12;
         $months_to_pay = $this->loan_term * 12;
 
         $obj = new PMT($interest_rate, $months_to_pay, $this->loan_amount->inclusive()->getAmount()->toFloat());
@@ -110,6 +113,7 @@ trait UpdatingAvailment
 
     /**
      * @return UpdatingAvailment|\Homeful\Availments\Models\Availment
+     *
      * @throws \Brick\Math\Exception\MathException
      * @throws \Brick\Math\Exception\NumberFormatException
      * @throws \Brick\Math\Exception\RoundingNecessaryException

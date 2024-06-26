@@ -2,6 +2,4 @@
 
 namespace Homeful\Availments;
 
-class Availments
-{
-}
+class Availments {}

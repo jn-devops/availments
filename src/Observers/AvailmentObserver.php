@@ -26,10 +26,7 @@ class AvailmentObserver
     /**
      * Handle the Availment "created" event.
      */
-    public function created(Availment $availment): void
-    {
-
-    }
+    public function created(Availment $availment): void {}
 
     /**
      * Handle the Availment "updated" event.

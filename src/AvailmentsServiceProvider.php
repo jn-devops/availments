@@ -2,13 +2,10 @@
 
 namespace Homeful\Availments;
 
-use Illuminate\Database\Schema\Blueprint;
+use Homeful\Availments\Commands\AvailmentsCommand;
+use Homeful\Availments\Providers\EventServiceProvider;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use Homeful\Availments\Commands\AvailmentsCommand;
-use Homeful\Availments\Models\Availment;
-use Homeful\Availments\Observers\AvailmentObserver;
-use Homeful\Availments\Providers\EventServiceProvider;
 
 class AvailmentsServiceProvider extends PackageServiceProvider
 {
