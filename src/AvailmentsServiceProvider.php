@@ -20,7 +20,6 @@ class AvailmentsServiceProvider extends PackageServiceProvider
             ->name('availments')
             ->hasConfigFile(['availments', 'property', 'data', 'equity', 'loan'])
             ->hasViews()
-            ->publishesServiceProvider(EventServiceProvider::class)
             ->hasMigration('create_availments_table')
             ->hasCommand(AvailmentsCommand::class);
     }
