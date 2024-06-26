@@ -3,7 +3,6 @@
 namespace Homeful\Availments;
 
 use Homeful\Availments\Commands\AvailmentsCommand;
-use Homeful\Availments\Providers\EventServiceProvider;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
