@@ -76,7 +76,8 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Homeful\\Availments\\AvailmentsServiceProvider"
+                "Homeful\\Availments\\AvailmentsServiceProvider",
+                "Homeful\\Availments\\Providers\\EventServiceProvider"
             ],
             "aliases": {
                 "Availments": "Homeful\\Availments\\Facades\\Availments"
