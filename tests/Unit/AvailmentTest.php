@@ -86,6 +86,7 @@ it('has attributes', function () {
     expect($availment->balance_cash_out_amount)->toBeInstanceOf(Price::class);
     expect($availment->loan_object)->toBeNull();
     expect($availment->loan_data)->toBeNull();
+    expect($availment->loan_array)->toBeNull();
 });
 
 it('can be persisted using associative array', function (array $attributes) {

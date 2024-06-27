@@ -175,7 +175,7 @@ it('can persist availment - middle income (promo)', function (MockInterface $bor
     }
 })->with('borrower-25yo-15k_gmi', 'property-2.5M', 'agapeya-promo');
 
-it('has loan object and data', function (MockInterface $borrowerObject, MockInterface $propertyObject) {
+it('has loan object, data and array', function (MockInterface $borrowerObject, MockInterface $propertyObject) {
     $percent_down_payment = 5 / 100;
     $loan_interest = 7 / 100;
 
@@ -184,12 +184,10 @@ it('has loan object and data', function (MockInterface $borrowerObject, MockInte
     );
     if ($availment instanceof Availment) {
         expect($availment->loan_object)->toBeInstanceOf(Loan::class);
-        expect($availment->loan_object)->toBeInstanceOf(Loan::class);
-        expect($availment->loan_object)->toBeInstanceOf(Loan::class);
-        expect($availment->loan_object)->toBeInstanceOf(Loan::class);
         with(AvailmentData::fromModel($availment), function (AvailmentData $data) use ($availment) {
             expect($availment->toData())->toBeInstanceOf(AvailmentData::class);
             expect($data->loan_data->toArray())->toBe($availment->loan_data->toArray());
+            expect($data->loan_data->toArray())->toBe($availment->loan_array);
         });
     }
 })->with('borrower-25yo-15k_gmi', 'property-2.5M');

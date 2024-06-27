@@ -42,6 +42,7 @@ use Whitecube\Price\Price;
  * @property Price $balance_cash_out_amount
  * @property Loan $loan_object
  * @property LoanData $loan_data
+ * @property array $loan_array
  *
  * @method int getKey()
  * @method Builder withMeta(...$args)
@@ -72,9 +73,9 @@ class Availment extends Model
         'low_cash_out_amount',
     ];
 
-    //    protected $appends = [
-    //        'loan_data'
-    //    ];
+        protected $appends = [
+            'loan_array'
+        ];
 
     /**
      * This is the same as processing fee.
@@ -82,7 +83,7 @@ class Availment extends Model
     protected function HoldingFee(): Attribute
     {
         return Attribute::make(
-            get: fn (int $value) => new Price(Money::ofMinor($value, 'PHP')),
+            get: fn (int $value) => (new Price(Money::ofMinor($value, 'PHP')))->setVat(0),
             set: fn (Price|int $value) => $value instanceof Price ? $value->inclusive()->getMinorAmount()->toInt() : Money::of($value, 'PHP')->getMinorAmount()->toInt()
         );
     }
@@ -90,7 +91,7 @@ class Availment extends Model
     protected function TotalContractPrice(): Attribute
     {
         return Attribute::make(
-            get: fn (int $value) => new Price(Money::ofMinor($value, 'PHP')),
+            get: fn (int $value) => (new Price(Money::ofMinor($value, 'PHP')))->setVat(0),
             set: fn (Price|int $value) => $value instanceof Price ? $value->inclusive()->getMinorAmount()->toInt() : Money::of($value, 'PHP')->getMinorAmount()->toInt()
         );
     }
@@ -122,14 +123,14 @@ class Availment extends Model
     protected function MiscellaneousFees(): Attribute
     {
         return Attribute::make(
-            get: fn ($value) => new Price(Money::ofMinor($value, 'PHP')),
+            get: fn ($value) => (new Price(Money::ofMinor($value, 'PHP')))->setVat(0),
             set: fn ($value) => $value instanceof Price ? $value->inclusive()->getMinorAmount()->toInt() : Money::of($value, 'PHP')->getMinorAmount()->toInt()
         );
     }
 
     public function getNetTotalContractPriceAttribute(): Price
     {
-        return new Price($this->total_contract_price->inclusive()->plus($this->miscellaneous_fees->inclusive()));
+        return (new Price($this->total_contract_price->inclusive()->plus($this->miscellaneous_fees->inclusive())))->setVat(0);
     }
 
     /**
@@ -158,7 +159,7 @@ class Availment extends Model
     protected function TotalContractPriceDownPaymentAmount(): Attribute
     {
         return Attribute::make(
-            get: fn ($value) => new Price(Money::ofMinor($value, 'PHP')),
+            get: fn ($value) => (new Price(Money::ofMinor($value, 'PHP')))->setVat(0),
             set: fn ($value) => $value instanceof Price ? $value->inclusive()->getMinorAmount()->toInt() : Money::of($value, 'PHP')->getMinorAmount()->toInt()
         );
     }
@@ -166,7 +167,7 @@ class Availment extends Model
     protected function TotalContractPriceBalanceDownPaymentAmount(): Attribute
     {
         return Attribute::make(
-            get: fn ($value) => new Price(Money::ofMinor($value, 'PHP')),
+            get: fn ($value) => (new Price(Money::ofMinor($value, 'PHP')))->setVat(0),
             set: fn ($value) => $value instanceof Price ? $value->inclusive()->getMinorAmount()->toInt() : Money::of($value, 'PHP')->getMinorAmount()->toInt()
         );
     }
@@ -198,7 +199,7 @@ class Availment extends Model
     protected function TotalContractPriceBalanceDownPaymentAmortizationAmount(): Attribute
     {
         return Attribute::make(
-            get: fn ($value) => new Price(Money::ofMinor($value, 'PHP')),
+            get: fn ($value) => (new Price(Money::ofMinor($value, 'PHP')))->setVat(0),
             set: fn ($value) => $value instanceof Price ? $value->inclusive()->getMinorAmount()->toInt() : Money::of($value, 'PHP')->getMinorAmount()->toInt()
         );
     }
@@ -206,7 +207,7 @@ class Availment extends Model
     protected function MiscellaneousFeesDownPaymentAmount(): Attribute
     {
         return Attribute::make(
-            get: fn ($value) => new Price(Money::ofMinor($value, 'PHP')),
+            get: fn ($value) => (new Price(Money::ofMinor($value, 'PHP')))->setVat(0),
             set: fn ($value) => $value instanceof Price ? $value->inclusive()->getMinorAmount()->toInt() : Money::of($value, 'PHP')->getMinorAmount()->toInt()
         );
     }
@@ -218,18 +219,18 @@ class Availment extends Model
 
     public function getTotalContractPriceBalancePaymentAmountAttribute(): Price
     {
-        return new Price($this->total_contract_price->inclusive()->multipliedBy($this->percent_balance_payment, roundingMode: RoundingMode::CEILING));
+        return (new Price($this->total_contract_price->inclusive()->multipliedBy($this->percent_balance_payment, roundingMode: RoundingMode::CEILING)))->setVat(0);
     }
 
     public function getMiscellaneousFeesBalancePaymentAmountAttribute(): Price
     {
-        return new Price($this->miscellaneous_fees->inclusive()->multipliedBy($this->percent_balance_payment, roundingMode: RoundingMode::CEILING));
+        return (new Price($this->miscellaneous_fees->inclusive()->multipliedBy($this->percent_balance_payment, roundingMode: RoundingMode::CEILING)))->setVat(0);
     }
 
     protected function LoanAmount(): Attribute
     {
         return Attribute::make(
-            get: fn ($value) => new Price(Money::ofMinor($value, 'PHP')),
+            get: fn ($value) => (new Price(Money::ofMinor($value, 'PHP')))->setVat(0),
             set: fn ($value) => $value instanceof Price ? $value->inclusive()->getMinorAmount()->toInt() : Money::of($value, 'PHP')->getMinorAmount()->toInt()
         );
     }
@@ -237,7 +238,7 @@ class Availment extends Model
     protected function LoanAmortizationAmount(): Attribute
     {
         return Attribute::make(
-            get: fn ($value) => new Price(Money::ofMinor($value, 'PHP')),
+            get: fn ($value) => (new Price(Money::ofMinor($value, 'PHP')))->setVat(0),
             set: fn ($value) => $value instanceof Price ? $value->inclusive()->getMinorAmount()->toInt() : Money::of($value, 'PHP')->getMinorAmount()->toInt()
         );
     }
@@ -276,13 +277,13 @@ class Availment extends Model
     {
         $amount = $this->getAttribute('meta')->get('low_cash_out.amount', 0);
 
-        return new Price(Money::ofMinor($amount, 'PHP'));
+        return (new Price(Money::ofMinor($amount, 'PHP')))->setVat(0);
     }
 
     protected function BalanceCashOutAmount(): Attribute
     {
         return Attribute::make(
-            get: fn ($value) => new Price(Money::ofMinor($value, 'PHP')),
+            get: fn ($value) => (new Price(Money::ofMinor($value, 'PHP')))->setVat(0),
             set: fn ($value) => $value instanceof Price ? $value->inclusive()->getMinorAmount()->toInt() : Money::of($value, 'PHP')->getMinorAmount()->toInt()
         );
     }
@@ -318,5 +319,10 @@ class Availment extends Model
     public function toData(): AvailmentData
     {
         return AvailmentData::fromModel($this);
+    }
+
+    public function getLoanArrayAttribute(): ?array
+    {
+        return optional($this->loan_data)->toArray();
     }
 }
