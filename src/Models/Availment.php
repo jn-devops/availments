@@ -73,9 +73,9 @@ class Availment extends Model
         'low_cash_out_amount',
     ];
 
-        protected $appends = [
-            'loan_array'
-        ];
+    protected $appends = [
+        'loan_array',
+    ];
 
     /**
      * This is the same as processing fee.
