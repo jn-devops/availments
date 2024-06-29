@@ -2,6 +2,10 @@
 
 All notable changes to `availments` will be documented in this file.
 
+## #v1.2.2 - 2024-06-29
+
+refactor Availment model and observer
+
 ## #v1.2.1 - 2024-06-29
 
 update composer.json remove jn-devops/common, redundant in jn-devops/loan
