@@ -2,6 +2,10 @@
 
 All notable changes to `availments` will be documented in this file.
 
+## #v1.2.1 - 2024-06-29
+
+update composer.json remove jn-devops/common, redundant in jn-devops/loan
+
 ## #v1.2.0 - 2024-06-27
 
 add loan_array to Availment model, add setVat(0) to all Price attributes
