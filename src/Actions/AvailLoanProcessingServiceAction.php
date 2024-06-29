@@ -2,20 +2,17 @@
 
 namespace Homeful\Availments\Actions;
 
-use Brick\Math\Exception\NumberFormatException;
-use Brick\Math\Exception\RoundingNecessaryException;
+use Homeful\Borrower\Exceptions\{MaximumBorrowingAgeBreached, MinimumBorrowingAgeNotMet};
+use Brick\Math\Exception\{NumberFormatException, RoundingNecessaryException};
+use Homeful\Common\Interfaces\{BorrowerInterface, PropertyInterface};
 use Brick\Money\Exception\UnknownCurrencyException;
-use Homeful\Availments\Interfaces\BorrowerInterface;
-use Homeful\Availments\Interfaces\PropertyInterface;
-use Homeful\Availments\Models\Availment;
-use Homeful\Borrower\Borrower;
-use Homeful\Borrower\Exceptions\MaximumBorrowingAgeBreached;
-use Homeful\Borrower\Exceptions\MinimumBorrowingAgeNotMet;
-use Homeful\Loan\Loan;
-use Homeful\Property\Property;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
 use Lorisleiva\Actions\Concerns\AsAction;
+use Homeful\Availments\Models\Availment;
+use Homeful\Borrower\Borrower;
+use Homeful\Property\Property;
+use Illuminate\Support\Arr;
+use Homeful\Loan\Loan;
 
 class AvailLoanProcessingServiceAction
 {

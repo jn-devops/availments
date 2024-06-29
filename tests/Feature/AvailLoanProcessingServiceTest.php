@@ -1,10 +1,11 @@
 <?php
 
+use Homeful\Common\Interfaces\{BorrowerInterface, PropertyInterface};
 use Brick\Money\Money;
 use Homeful\Availments\Actions\AvailLoanProcessingServiceAction;
 use Homeful\Availments\Data\AvailmentData;
-use Homeful\Availments\Interfaces\BorrowerInterface;
-use Homeful\Availments\Interfaces\PropertyInterface;
+//use Homeful\Availments\Interfaces\BorrowerInterface;
+//use Homeful\Availments\Interfaces\PropertyInterface;
 use Homeful\Availments\Models\Availment;
 use Homeful\Loan\Loan;
 use Illuminate\Foundation\Testing\RefreshDatabase;
