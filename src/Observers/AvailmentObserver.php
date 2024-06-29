@@ -11,16 +11,7 @@ class AvailmentObserver
      */
     public function creating(Availment $availment): void
     {
-
-        $availment
-            ->updatingMiscellaneousFees()
-            ->updatingTotalContractPriceDownPaymentAmount()
-            ->updatingTotalContractPriceBalanceDownPaymentAmount()
-            ->updatingTotalContractPriceBalanceDownPaymentAmortizationAmount()
-            ->updatingMiscellaneousFeesDownPaymentAmount()
-            ->updatingLoanAmount()
-            ->updatingLoanAmortizationAmount()
-            ->updatingBalanceCashOutAmount();
+        $this->updatingAvailment($availment);
     }
 
     /**
@@ -33,15 +24,7 @@ class AvailmentObserver
      */
     public function updating(Availment $availment): void
     {
-        $availment
-            ->updatingMiscellaneousFees()
-            ->updatingTotalContractPriceDownPaymentAmount()
-            ->updatingTotalContractPriceBalanceDownPaymentAmount()
-            ->updatingTotalContractPriceBalanceDownPaymentAmortizationAmount()
-            ->updatingMiscellaneousFeesDownPaymentAmount()
-            ->updatingLoanAmount()
-            ->updatingLoanAmortizationAmount()
-            ->updatingBalanceCashOutAmount();
+        $this->updatingAvailment($availment);
     }
 
     /**
@@ -66,5 +49,18 @@ class AvailmentObserver
     public function forceDeleted(Availment $availment): void
     {
         //
+    }
+
+    protected function updatingAvailment(Availment $availment): void
+    {
+        $availment
+            ->updatingMiscellaneousFees()
+            ->updatingTotalContractPriceDownPaymentAmount()
+            ->updatingTotalContractPriceBalanceDownPaymentAmount()
+            ->updatingTotalContractPriceBalanceDownPaymentAmortizationAmount()
+            ->updatingMiscellaneousFeesDownPaymentAmount()
+            ->updatingLoanAmount()
+            ->updatingLoanAmortizationAmount()
+            ->updatingBalanceCashOutAmount();
     }
 }
