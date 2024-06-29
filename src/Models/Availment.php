@@ -76,7 +76,7 @@ class Availment extends Model
 
     protected $appends = [
         'loan_array',
-        'is_promotional'
+        'is_promotional',
     ];
 
     protected $casts = [
