@@ -40,6 +40,7 @@ use Whitecube\Price\Price;
  * @property Price $loan_amortization_amount
  * @property Price $low_cash_out_amount
  * @property Price $balance_cash_out_amount
+ * @property bool $is_promotional
  * @property Loan $loan_object
  * @property LoanData $loan_data
  * @property array $loan_array
@@ -75,6 +76,7 @@ class Availment extends Model
 
     protected $appends = [
         'loan_array',
+        'is_promotional'
     ];
 
     protected $casts = [

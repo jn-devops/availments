@@ -84,6 +84,7 @@ it('has attributes', function () {
     expect($availment->loan_amortization_amount)->toBeInstanceOf(Price::class);
     expect($availment->low_cash_out_amount)->toBeInstanceOf(Price::class);
     expect($availment->balance_cash_out_amount)->toBeInstanceOf(Price::class);
+    expect($availment->is_promotional)->toBeBool();
     expect($availment->loan_object)->toBeNull();
     expect($availment->loan_data)->toBeNull();
     expect($availment->loan_array)->toBeNull();
@@ -124,6 +125,7 @@ it('can be persisted using associative array', function (array $attributes) {
         expect($availment->loan_amortization_amount->inclusive()->compareTo(19978.0))->toBe(0); //H
         expect($availment->low_cash_out_amount->inclusive()->compareTo(0))->toBe(0);
         expect($availment->balance_cash_out_amount->inclusive()->compareTo(0.0))->toBe(0);
+        expect($availment->is_promotional)->toBeFalse();
         $availment->loan_term = 25;
         $availment->save();
         expect($availment->loan_amortization_amount->inclusive()->compareTo(18213.0))->toBe(0); //H
@@ -191,6 +193,7 @@ it('can have sample condominium computation', function (array $attributes) {
         expect($availment->loan_amortization_amount->inclusive()->compareTo(35961.0))->toBe(0); //H
         expect($availment->low_cash_out_amount->inclusive()->compareTo(0))->toBe(0);
         expect($availment->balance_cash_out_amount->inclusive()->compareTo(0.0))->toBe(0);
+        expect($availment->is_promotional)->toBeFalse();
         $availment->loan_term = 25;
         $availment->save();
         expect($availment->loan_amortization_amount->inclusive()->compareTo(32783.0))->toBe(0); //H
@@ -201,6 +204,7 @@ it('can have sample condominium computation', function (array $attributes) {
         $availment->percent_miscellaneous_fees = 5 / 100;
         $availment->low_cash_out_amount = 30000; //C
         $availment->save();
+        expect($availment->is_promotional)->toBeTrue();
         expect($availment->miscellaneous_fees->inclusive()->compareTo(4500000.0 * 5 / 100))->toBe(0); //a
         expect($availment->miscellaneous_fees->inclusive()->compareTo(225000.0))->toBe(0); //a
         expect($availment->total_contract_price_balance_payment_amount->inclusive()->compareTo(4275000.0))->toBe(0); //F
