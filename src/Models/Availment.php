@@ -6,6 +6,7 @@ use Brick\Math\RoundingMode;
 use Brick\Money\Money;
 use Homeful\Availments\Data\AvailmentData;
 use Homeful\Availments\Traits\UpdatingAvailment;
+use Homeful\Common\Casts\PriceCast;
 use Homeful\Common\Traits\HasMeta;
 use Homeful\Common\Traits\HasPackageFactory as HasFactory;
 use Homeful\Loan\Data\LoanData;
@@ -13,7 +14,6 @@ use Homeful\Loan\Loan;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Whitecube\Price\Price;
-use Homeful\Common\Casts\PriceCast;
 
 /**
  * Class Availment
