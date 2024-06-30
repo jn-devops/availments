@@ -30,7 +30,6 @@ class AvailLoanProcessingServiceAction
     protected int $total_contract_price_balance_down_payment_term;
 
     /**
-     * @param float $percent_down_payment
      * @return $this
      */
     public function setPercentDownPayment(float $percent_down_payment): self
@@ -40,16 +39,12 @@ class AvailLoanProcessingServiceAction
         return $this;
     }
 
-    /**
-     * @return float
-     */
     public function getPercentDownPayment(): float
     {
         return $this->percent_down_payment ?? config('availments.default_percent_down_payment');
     }
 
     /**
-     * @param float $percent_miscellaneous_fees
      * @return $this
      */
     public function setPercentMiscellaneousFees(float $percent_miscellaneous_fees): self
@@ -59,16 +54,12 @@ class AvailLoanProcessingServiceAction
         return $this;
     }
 
-    /**
-     * @return float
-     */
     public function getPercentMiscellaneousFees(): float
     {
         return $this->percent_miscellaneous_fees ?? config('availments.default_percent_miscellaneous_fees');
     }
 
     /**
-     * @param int $loan_term
      * @return $this
      */
     public function setLoanTerm(int $loan_term): self
@@ -78,16 +69,12 @@ class AvailLoanProcessingServiceAction
         return $this;
     }
 
-    /**
-     * @return int
-     */
     public function getLoanTerm(): int
     {
         return $this->loan_term ?? config('availments.default_loan_term');
     }
 
     /**
-     * @param int $total_contract_price_balance_down_payment_term
      * @return $this
      */
     public function setTotalContractPriceBalanceDownPaymentTerm(int $total_contract_price_balance_down_payment_term): AvailLoanProcessingServiceAction
@@ -97,9 +84,6 @@ class AvailLoanProcessingServiceAction
         return $this;
     }
 
-    /**
-     * @return int
-     */
     public function getTotalContractPriceBalanceDownPaymentTerm(): int
     {
         return $this->total_contract_price_balance_down_payment_term ?? config('availments.default_total_contract_price_balance_down_payment_term');
@@ -170,6 +154,4 @@ class AvailLoanProcessingServiceAction
             $availment->save();
         });
     }
-
-
 }
