@@ -2,6 +2,10 @@
 
 All notable changes to `availments` will be documented in this file.
 
+## #v1.2.6 - 2024-06-30
+
+fix setters in AvailLoanProcessingServiceAction
+
 ## #v1.2.5 - 2024-06-30
 
 configure settings in avail loan processing service action
