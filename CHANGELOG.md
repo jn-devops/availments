@@ -2,6 +2,10 @@
 
 All notable changes to `availments` will be documented in this file.
 
+## #v1.2.7 - 2024-06-30
+
+add loan_interest and loan_cash_out_amount setters to AvailLoanProcessingServiceAction
+
 ## #v1.2.6 - 2024-06-30
 
 fix setters in AvailLoanProcessingServiceAction
