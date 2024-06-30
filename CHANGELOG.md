@@ -2,6 +2,10 @@
 
 All notable changes to `availments` will be documented in this file.
 
+## #v1.2.5 - 2024-06-30
+
+configure settings in avail loan processing service action
+
 ## #v1.2.4 - 2024-06-29
 
 expose is_promotional attribute in Availment model
