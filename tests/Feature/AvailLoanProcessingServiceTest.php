@@ -200,7 +200,7 @@ it('can be configured using setters', function (MockInterface $borrowerObject, M
         ->setPercentMiscellaneousFees(9 / 100)
         ->setLoanTerm(24)
         ->setTotalContractPriceBalanceDownPaymentTerm(10)
-        ->setLoanInterest(4/100)
+        ->setLoanInterest(4 / 100)
         ->setLowCashOutAmount(25000)
         ->run($borrowerObject, $propertyObject,
             []
@@ -210,7 +210,7 @@ it('can be configured using setters', function (MockInterface $borrowerObject, M
         expect($availment->percent_miscellaneous_fees)->toBe(9 / 100);
         expect($availment->loan_term)->toBe(24);
         expect($availment->total_contract_price_balance_down_payment_term)->toBe(10);
-        expect($availment->loan_interest)->toBe(4/100);
+        expect($availment->loan_interest)->toBe(4 / 100);
         expect($availment->low_cash_out_amount->inclusive()->compareTo(25000))->toBe(0);
     }
 })->with('borrower-25yo-15k_gmi', 'property-2.5M');

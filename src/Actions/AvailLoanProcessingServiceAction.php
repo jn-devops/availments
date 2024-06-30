@@ -115,9 +115,6 @@ class AvailLoanProcessingServiceAction
         return $this;
     }
 
-    /**
-     * @return float
-     */
     public function getPercentDownPayment(): float
     {
         return self::$percent_down_payment ?? config('availments.default_percent_down_payment');
@@ -133,9 +130,6 @@ class AvailLoanProcessingServiceAction
         return $this;
     }
 
-    /**
-     * @return float
-     */
     public function getPercentMiscellaneousFees(): float
     {
         return self::$percent_miscellaneous_fees ?? config('availments.default_percent_miscellaneous_fees');
@@ -151,9 +145,6 @@ class AvailLoanProcessingServiceAction
         return $this;
     }
 
-    /**
-     * @return int
-     */
     public function getLoanTerm(): int
     {
         return self::$loan_term ?? config('availments.default_loan_term');
@@ -169,16 +160,12 @@ class AvailLoanProcessingServiceAction
         return $this;
     }
 
-    /**
-     * @return int
-     */
     public function getTotalContractPriceBalanceDownPaymentTerm(): int
     {
         return self::$total_contract_price_balance_down_payment_term ?? config('availments.default_total_contract_price_balance_down_payment_term');
     }
 
     /**
-     * @param float $loan_interest
      * @return $this
      */
     public function setLoanInterest(float $loan_interest): self
@@ -188,16 +175,12 @@ class AvailLoanProcessingServiceAction
         return $this;
     }
 
-    /**
-     * @return float
-     */
     public function getLowCashOutAmount(): float
     {
         return self::$low_cash_out_amount ?? 0.0;
     }
 
     /**
-     * @param float $low_cash_out_amount
      * @return $this
      */
     public function setLowCashOutAmount(float $low_cash_out_amount): self
@@ -208,7 +191,6 @@ class AvailLoanProcessingServiceAction
     }
 
     /**
-     * @return float
      * @throws \Brick\Math\Exception\MathException
      * @throws \Brick\Money\Exception\MoneyMismatchException
      */
@@ -217,9 +199,6 @@ class AvailLoanProcessingServiceAction
         return self::$loan_interest ?? $this->loan->getAnnualInterestRate();
     }
 
-    /**
-     * @return void
-     */
     public function resetProperties(): void
     {
         self::$percent_down_payment = null;
