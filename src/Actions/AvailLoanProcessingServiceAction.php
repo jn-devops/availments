@@ -29,65 +29,11 @@ class AvailLoanProcessingServiceAction
 
     protected static ?int $total_contract_price_balance_down_payment_term = null;
 
-    /**
-     * @return $this
-     */
-    public function setPercentDownPayment(float $percent_down_payment): self
-    {
-        self::$percent_down_payment = $percent_down_payment;
+    protected static ?float $loan_interest = null;
 
-        return $this;
-    }
+    protected static ?float $low_cash_out_amount = null;
 
-    public function getPercentDownPayment(): float
-    {
-        return self::$percent_down_payment ?? config('availments.default_percent_down_payment');
-    }
-
-    /**
-     * @return $this
-     */
-    public function setPercentMiscellaneousFees(float $percent_miscellaneous_fees): self
-    {
-        self::$percent_miscellaneous_fees = $percent_miscellaneous_fees;
-
-        return $this;
-    }
-
-    public function getPercentMiscellaneousFees(): float
-    {
-        return self::$percent_miscellaneous_fees ?? config('availments.default_percent_miscellaneous_fees');
-    }
-
-    /**
-     * @return $this
-     */
-    public function setLoanTerm(int $loan_term): self
-    {
-        self::$loan_term = $loan_term;
-
-        return $this;
-    }
-
-    public function getLoanTerm(): int
-    {
-        return self::$loan_term ?? config('availments.default_loan_term');
-    }
-
-    /**
-     * @return $this
-     */
-    public function setTotalContractPriceBalanceDownPaymentTerm(int $total_contract_price_balance_down_payment_term): AvailLoanProcessingServiceAction
-    {
-        self::$total_contract_price_balance_down_payment_term = $total_contract_price_balance_down_payment_term;
-
-        return $this;
-    }
-
-    public function getTotalContractPriceBalanceDownPaymentTerm(): int
-    {
-        return self::$total_contract_price_balance_down_payment_term ?? config('availments.default_total_contract_price_balance_down_payment_term');
-    }
+    protected Loan $loan;
 
     /**
      * @throws MaximumBorrowingAgeBreached
@@ -122,20 +68,20 @@ class AvailLoanProcessingServiceAction
         $property = (new Property)
             ->setTotalContractPrice($propertyObject->getTotalContractPrice())
             ->setAppraisedValue($propertyObject->getAppraisedValue());
-        $loan = (new Loan)
+        $this->loan = (new Loan)
             ->setBorrower($borrower)
             ->setProperty($property);
-        $loan->setLoanAmount($loan->getNetTotalContractPrice());
+        $this->loan->setLoanAmount($this->loan->getNetTotalContractPrice());
 
         $product_sku = $propertyObject->getSKU();
         $holding_fee = Arr::get($validated, 'holding_fee', $propertyObject->getProcessingFee());
         $total_contract_price = Arr::get($validated, 'total_contract_price', $property->getTotalContractPrice());
         $percent_down_payment = Arr::get($validated, 'percent_down_payment', $this->getPercentDownPayment());
         $percent_miscellaneous_fees = Arr::get($validated, 'percent_miscellaneous_fees', $this->getPercentMiscellaneousFees());
-        $loan_interest = Arr::get($validated, 'loan_interest', $loan->getAnnualInterestRate());
+        $loan_interest = Arr::get($validated, 'loan_interest', $this->getLoanInterest());
         $loan_term = Arr::get($validated, 'loan_term', $this->getLoanTerm());
         $total_contract_price_balance_down_payment_term = Arr::get($validated, 'total_contract_price_balance_down_payment_term', $this->getTotalContractPriceBalanceDownPaymentTerm());
-        $low_cash_out_amount = Arr::get($validated, 'low_cash_out_amount', 0);
+        $low_cash_out_amount = Arr::get($validated, 'low_cash_out_amount', $this->getLowCashOutAmount());
 
         $attribs = [
             'product_sku' => $product_sku,
@@ -149,19 +95,138 @@ class AvailLoanProcessingServiceAction
             'low_cash_out_amount' => $low_cash_out_amount,
         ];
 
+        $availment = app(Availment::class)->create($attribs);
+        if ($availment instanceof Availment) {
+            $availment->loan_object = $this->loan;
+            $availment->save();
+        }
         $this->resetProperties();
 
-        return tap(app(Availment::class)->create($attribs), function (Availment $availment) use ($loan) {
-            $availment->loan_object = $loan;
-            $availment->save();
-        });
+        return $availment;
     }
 
+    /**
+     * @return $this
+     */
+    public function setPercentDownPayment(float $percent_down_payment): self
+    {
+        self::$percent_down_payment = $percent_down_payment;
+
+        return $this;
+    }
+
+    /**
+     * @return float
+     */
+    public function getPercentDownPayment(): float
+    {
+        return self::$percent_down_payment ?? config('availments.default_percent_down_payment');
+    }
+
+    /**
+     * @return $this
+     */
+    public function setPercentMiscellaneousFees(float $percent_miscellaneous_fees): self
+    {
+        self::$percent_miscellaneous_fees = $percent_miscellaneous_fees;
+
+        return $this;
+    }
+
+    /**
+     * @return float
+     */
+    public function getPercentMiscellaneousFees(): float
+    {
+        return self::$percent_miscellaneous_fees ?? config('availments.default_percent_miscellaneous_fees');
+    }
+
+    /**
+     * @return $this
+     */
+    public function setLoanTerm(int $loan_term): self
+    {
+        self::$loan_term = $loan_term;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getLoanTerm(): int
+    {
+        return self::$loan_term ?? config('availments.default_loan_term');
+    }
+
+    /**
+     * @return $this
+     */
+    public function setTotalContractPriceBalanceDownPaymentTerm(int $total_contract_price_balance_down_payment_term): self
+    {
+        self::$total_contract_price_balance_down_payment_term = $total_contract_price_balance_down_payment_term;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getTotalContractPriceBalanceDownPaymentTerm(): int
+    {
+        return self::$total_contract_price_balance_down_payment_term ?? config('availments.default_total_contract_price_balance_down_payment_term');
+    }
+
+    /**
+     * @param float $loan_interest
+     * @return $this
+     */
+    public function setLoanInterest(float $loan_interest): self
+    {
+        self::$loan_interest = $loan_interest;
+
+        return $this;
+    }
+
+    /**
+     * @return float
+     */
+    public function getLowCashOutAmount(): float
+    {
+        return self::$low_cash_out_amount ?? 0.0;
+    }
+
+    /**
+     * @param float $low_cash_out_amount
+     * @return $this
+     */
+    public function setLowCashOutAmount(float $low_cash_out_amount): self
+    {
+        self::$low_cash_out_amount = $low_cash_out_amount;
+
+        return $this;
+    }
+
+    /**
+     * @return float
+     * @throws \Brick\Math\Exception\MathException
+     * @throws \Brick\Money\Exception\MoneyMismatchException
+     */
+    protected function getLoanInterest(): float
+    {
+        return self::$loan_interest ?? $this->loan->getAnnualInterestRate();
+    }
+
+    /**
+     * @return void
+     */
     public function resetProperties(): void
     {
         self::$percent_down_payment = null;
         self::$percent_miscellaneous_fees = null;
         self::$loan_term = null;
         self::$total_contract_price_balance_down_payment_term = null;
+        self::$loan_interest = null;
+        self::$low_cash_out_amount = null;
     }
 }
