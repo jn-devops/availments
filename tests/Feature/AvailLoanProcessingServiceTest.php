@@ -196,16 +196,16 @@ it('has loan object, data and array', function (MockInterface $borrowerObject, M
 
 it('can be configured using setters', function (MockInterface $borrowerObject, MockInterface $propertyObject) {
     $availment = app(AvailLoanProcessingServiceAction::class)
-        ->setPercentDownPayment(10/100)
-        ->setPercentMiscellaneousFees(9/100)
+        ->setPercentDownPayment(10 / 100)
+        ->setPercentMiscellaneousFees(9 / 100)
         ->setLoanTerm(24)
         ->setTotalContractPriceBalanceDownPaymentTerm(10)
         ->run($borrowerObject, $propertyObject,
-        []
-    );
+            []
+        );
     if ($availment instanceof Availment) {
-        expect($availment->percent_down_payment)->toBe(10/100);
-        expect($availment->percent_miscellaneous_fees)->toBe(9/100);
+        expect($availment->percent_down_payment)->toBe(10 / 100);
+        expect($availment->percent_miscellaneous_fees)->toBe(9 / 100);
         expect($availment->loan_term)->toBe(24);
         expect($availment->total_contract_price_balance_down_payment_term)->toBe(10);
     }

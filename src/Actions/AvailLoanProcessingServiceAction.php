@@ -157,9 +157,6 @@ class AvailLoanProcessingServiceAction
         });
     }
 
-    /**
-     * @return void
-     */
     public function resetProperties(): void
     {
         self::$percent_down_payment = null;
